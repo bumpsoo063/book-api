@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-
+	"github.com/google/uuid"
 	"git.bumpsoo.dev/bumpsoo/book-api/database"
 	"git.bumpsoo.dev/bumpsoo/book-api/model"
 )
@@ -44,6 +44,12 @@ func SignUp(c *gin.Context) {
 	hasher.Write(password)
 	hashedPasswordBytes := hasher.Sum(nil)
 	admin.Password = hex.EncodeToString(hashedPasswordBytes)
+	admin.Id, err = uuid.NewUUID()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+	}
 	sql = db.QueryRow("INSERT INTO admin VALUES ($1, $2, $3)", admin.Id, admin.Username, admin.Password)
 	if err := sql.Scan(&row); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
