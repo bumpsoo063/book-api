@@ -77,7 +77,7 @@ func SignIn(c *gin.Context) {
 	}
 	row := db.QueryRow("SELECT * FROM admin WHERE username='$1'", admin.Username)
 	var dbAdmin model.Admin
-	if err := row.Scan(&dbAdmin); err != nil {
+	if err := row.Scan(&dbAdmin.Id, &dbAdmin.Username, &dbAdmin.Password); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"bad input": "username does not exist",
 		})
