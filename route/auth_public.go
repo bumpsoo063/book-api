@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"git.bumpsoo.dev/bumpsoo/book-api/database"
 	"git.bumpsoo.dev/bumpsoo/book-api/model"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func SignUp(c *gin.Context) {
@@ -50,12 +50,7 @@ func SignUp(c *gin.Context) {
 			"error": err.Error(),
 		})
 	}
-	sql = db.QueryRow("INSERT INTO admin VALUES ($1, $2, $3)", admin.Id, admin.Username, admin.Password)
-	if err := sql.Scan(&row); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-	}
+	db.QueryRow("INSERT INTO admin VALUES ($1, $2, $3)", admin.Id, admin.Username, admin.Password)
 	c.JSON(http.StatusOK, gin.H{
 		"sign-up": "success",
 	})
