@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"net/http"
 
 	"git.bumpsoo.dev/bumpsoo/book-api/database"
@@ -74,13 +75,14 @@ func SignIn(c *gin.Context) {
 			"error": "can not connect to database. " + err.Error(),
 		})
 	}
-	row := db.QueryRow("SELECT * FROM admin WHERE username=$1", admin.Username)
+	row := db.QueryRow("SELECT * FROM admin WHERE username='$1'", admin.Username)
 	var dbAdmin model.Admin
 	if err := row.Scan(&dbAdmin); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"bad input": "username does not exist",
 		})
 	}
+	fmt.Println(dbAdmin)
 	if dbAdmin.Password != password.HashPassword(admin.Password) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"bad input": "invalid input",
