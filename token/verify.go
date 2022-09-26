@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func Parse(auth string) (*jwt.Token, error) {
+func Parse(auth string) (jwt.Token, error) {
 	temp := strings.Split(auth, " ")
 	var tokenString string
 	if len(temp) == 2 {
@@ -22,12 +22,12 @@ func Parse(auth string) (*jwt.Token, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		return nil, err
+		return jwt.Token{}, err
 	}
-	return token, nil
+	return *token, nil
 }
 
-func ExtractAccess(token *jwt.Token) (uuid.UUID, error) {
+func ExtractAccess(token jwt.Token) (uuid.UUID, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		access := claims["access_uuid"].(uuid.UUID)
 		return access, nil

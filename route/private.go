@@ -11,6 +11,6 @@ func PrivateRoutes(a *gin.Engine) {
 	router.PATCH("/book/:uuid", handler.PatchBook)
 	router.DELETE("/book/:uuid", handler.DeleteBook)
 
-	router.POST("/auth/sign-out", handler.SignOut)
+	router.DELETE("/auth/sign-out", handler.SignOut)
 	router.POST("/auth/refresh", handler.Refresh)
 }
