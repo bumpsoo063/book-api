@@ -10,22 +10,23 @@ import (
 	"github.com/google/uuid"
 )
 
-func Generate(user uuid.UUID) (model.Token, error) {
+func Generate(userId string) (model.Token, error) {
 	var token model.Token
 	secret := os.Getenv("JWT_SECRET_KEY")
 	minutes, err := strconv.Atoi(os.Getenv("JWT_SECRET_EXPIRE_MINUTES"))
 	if err != nil {
 		minutes = 10
 	}
-	token.AccessUuid, err = uuid.NewUUID()
+	id, err := uuid.NewUUID()
+	token.AccessUuid = id.String()
 	if err != nil {
 		return token, err
 	}
 	token.AccessExpire = time.Now().Add(time.Minute * time.Duration(minutes)).Unix()
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
-	claims["access_uuid"] = token.AccessUuid.String()
-	claims["user_id"] = user.String()
+	claims["access_uuid"] = token.AccessUuid
+	claims["user_id"] = userId
 	claims["exp"] = token.AccessExpire
 	token.AccessToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(secret))
 	if err != nil {
@@ -37,16 +38,19 @@ func Generate(user uuid.UUID) (model.Token, error) {
 		days = 3
 	}
 	token.RefreshExpire = time.Now().Add(time.Hour * 24 * time.Duration(days)).Unix()
-	token.RefreshUuid, err = uuid.NewUUID()
 	if err != nil {
 		return token, err
 	}
+	id, err = uuid.NewUUID()
+	token.RefreshUuid = id.String()
 	claims = jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["refresh_uuid"] = token.RefreshUuid
-	claims["user_id"] = user
+	claims["user_id"] = userId
 	claims["exp"] = token.RefreshExpire
 	token.RefreshToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(rsecret))
-
+	if err != nil {
+		return token, err
+	}
 	return token, nil
 }

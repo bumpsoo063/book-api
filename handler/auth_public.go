@@ -33,12 +33,13 @@ func SignUp(c *gin.Context) {
 	}
 	admin.Password = password.HashPassword(admin.Password)
 	var err error
-	admin.Id, err = uuid.NewUUID()
+	id, err := uuid.NewUUID()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 	}
+	admin.Id = id.String()
 	if _, err := db.Exec(`INSERT INTO admin VALUES ($1, $2, $3)`, admin.Id, admin.Username, admin.Password); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -47,7 +48,7 @@ func SignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"sign-up": "success",
 		"admin": map[string]any{
-			"uuid":     admin.Id.String(),
+			"id":       admin.Id,
 			"username": admin.Username,
 		},
 		"links": map[string]string{
@@ -98,7 +99,7 @@ func SignIn(c *gin.Context) {
 		"access_token":  token.AccessToken,
 		"refresh_token": token.RefreshToken,
 		"admin": map[string]any{
-			"uuid":     dbAdmin.Id.String(),
+			"id":       dbAdmin.Id,
 			"username": dbAdmin.Username,
 		},
 		"links": map[string]string{

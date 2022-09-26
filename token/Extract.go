@@ -14,11 +14,12 @@ func ExtractAccess(auth string) (string, error) {
 	if len(temp) == 2 {
 		tokenString = temp[1]
 	}
+	secret := os.Getenv("JWT_SECRET")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
+		return []byte(secret), nil
 	})
 	if err != nil {
 		fmt.Println(err.Error())

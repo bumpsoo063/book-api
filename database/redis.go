@@ -7,7 +7,6 @@ import (
 
 	"git.bumpsoo.dev/bumpsoo/book-api/model"
 	"github.com/go-redis/redis/v9"
-	"github.com/google/uuid"
 )
 
 var rdb *redis.Client
@@ -22,14 +21,14 @@ func GetRedis() *redis.Client {
 	return rdb
 }
 
-func SetToken(user uuid.UUID, token *model.Token, redis *redis.Client) error {
+func SetToken(userId string, token *model.Token, redis *redis.Client) error {
 	accessExpire := time.Unix(token.AccessExpire, 0)
 	refreshExpire := time.Unix(token.RefreshExpire, 0)
 	now := time.Now()
-	if err := redis.Set(context.Background(), token.AccessUuid.String(), user.String(), accessExpire.Sub(now)).Err(); err != nil {
+	if err := redis.Set(context.Background(), token.AccessUuid, userId, accessExpire.Sub(now)).Err(); err != nil {
 		return err
 	}
-	if err := redis.Set(context.Background(), token.RefreshUuid.String(), user.String(), refreshExpire.Sub(now)).Err(); err != nil {
+	if err := redis.Set(context.Background(), token.RefreshUuid, userId, refreshExpire.Sub(now)).Err(); err != nil {
 		return err
 	}
 	return nil
