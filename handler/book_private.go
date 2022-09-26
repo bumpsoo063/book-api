@@ -23,8 +23,8 @@ func PostBook(c *gin.Context) {
 			"post book": "bad request",
 		})
 	}
-	book.CreatedAt = time.Now().Unix()
-	book.UpdatedAt = time.Now().Unix()
+	book.CreatedAt = time.Now()
+	book.UpdatedAt = time.Now()
 	id, err := uuid.NewUUID()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -42,7 +42,13 @@ func PostBook(c *gin.Context) {
 	fmt.Println(res)
 	ret := "v1/book/" + book.Id
 	c.JSON(http.StatusOK, gin.H{
-		"post book": "success",
+		"post book": map[string]any{
+			"id":         book.Id,
+			"created-at": book.CreatedAt,
+			"updated-at": book.UpdatedAt,
+			"title":      book.Title,
+			"author":     book.Author,
+		},
 		"link": map[string]string{
 			"PATCH":  ret,
 			"DELETE": ret,
