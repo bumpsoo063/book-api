@@ -21,6 +21,8 @@ services:
       - POSTGRES_PASSWORD=bookpassword
     networks:
       - api
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   
   redis:
     container_name: redis
