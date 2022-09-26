@@ -12,9 +12,8 @@ func GetBooks(c *gin.Context) {
 	db := database.GetPq()
 	rows, err := db.Query(`SELECT id, title FROM book`)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "error while querying" + err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	defer rows.Close()
 	ret := map[string]string{}
@@ -22,9 +21,8 @@ func GetBooks(c *gin.Context) {
 		var i, t string
 		err := rows.Scan(&i, &t)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 		ret[t] = "/v1/book/" + i
 	}
@@ -38,11 +36,13 @@ func GetBook(c *gin.Context) {
 	db := database.GetPq()
 	var book model.Book
 	if err := c.ShouldBindUri(&book); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "id must be passed"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	row := db.QueryRow(`SELECT * FROM book WHERE id = $1`, book.Id)
 	if err := row.Scan(&book.Id, &book.CreatedAt, &book.UpdatedAt, &book.Title, &book.Author); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"book": "no book is selected"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	ret := "/v1/book/" + book.Id
 	c.JSON(http.StatusOK, gin.H{

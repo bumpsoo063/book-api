@@ -7,30 +7,34 @@ import (
 	"git.bumpsoo.dev/bumpsoo/book-api/database"
 	"git.bumpsoo.dev/bumpsoo/book-api/model"
 	"github.com/gin-gonic/gin"
+	validator "github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
 func PostBook(c *gin.Context) {
 	book := model.Book{}
 	if err := c.ShouldBindJSON(&book); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"post book": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	if len(book.Author) <= 0 || len(book.Title) <= 0 {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"post book": "bad request"})
+	validate := validator.New()
+	if err := validate.Struct(book); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	book.CreatedAt = time.Now()
 	book.UpdatedAt = time.Now()
 	id, err := uuid.NewUUID()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"post book": "failed to create uuid " + err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	book.Id = id.String()
 	db := database.GetPq()
 	_, err = db.Exec(`INSERT INTO book VALUES ($1, $2, $3, $4, $5)`, book.Id, book.CreatedAt, book.UpdatedAt, book.Title, book.Author)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"post book": "failed to create column " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	ret := "/v1/book/" + book.Id
 	c.JSON(http.StatusOK, gin.H{
@@ -51,14 +55,12 @@ func PostBook(c *gin.Context) {
 func PatchBook(c *gin.Context) {
 	book := model.Book{}
 	if err := c.ShouldBindUri(&book); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"patch book": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	if err := c.ShouldBindJSON(&book); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"patch book": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	db := database.GetPq()
 	var err error
@@ -72,10 +74,12 @@ func PatchBook(c *gin.Context) {
 	} else if len(book.Author) > 0 {
 		_, err = db.Exec(`UPDATE book SET author = $1, updated_at = $2 WHERE id = $3`, book.Author, book.UpdatedAt, book.Id)
 	} else {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"patch book": "title or auther should be input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"patch book": "no column for input id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	ret := "/v1/book/" + book.Id
 	c.JSON(http.StatusOK, gin.H{

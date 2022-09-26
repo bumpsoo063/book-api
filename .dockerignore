@@ -1,7 +1,5 @@
 .dockerignore
 .gitignore
 Dockerfile
-Makefile
-
 .git/
 build/

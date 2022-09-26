@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"git.bumpsoo.dev/bumpsoo/book-api/database"
@@ -14,18 +13,15 @@ import (
 func SignOut(c *gin.Context) {
 	uuid, err := token.ExtractAccess(c.Request.Header.Get("authorization"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"sign-out": "unauthroized",
-		})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
 	rdb := database.GetRedis()
-	res, err := rdb.Del(context.Background(), uuid).Result()
+	_, err = rdb.Del(context.Background(), uuid).Result()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"sign-out": "unauthroized",
-		})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
-	fmt.Println(res)
 	c.JSON(http.StatusOK, gin.H{
 		"sign-out": "success",
 		"links": map[string]string{
@@ -37,33 +33,28 @@ func SignOut(c *gin.Context) {
 func Refresh(c *gin.Context) {
 	var tk model.Token
 	if err := c.ShouldBindJSON(&tk); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"refresh": "refresh token must be sent",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	id, err := token.ExtractRefresh(tk.RefreshToken)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"refresh": "unauthroized",
-		})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
 	rdb := database.GetRedis()
 	userId, err := rdb.Get(context.Background(), id).Result()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"refresh": "unauthroized",
-		})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
 	tk, err = token.Generate(userId, true)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"refresh": "failed to generate token " + err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	if err := database.SetToken(userId, &tk, rdb, true); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to set token " + err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"refresh":      "success",

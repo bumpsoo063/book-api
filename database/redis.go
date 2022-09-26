@@ -21,8 +21,6 @@ func GetRedis() *redis.Client {
 	return rdb
 }
 
-// if f == true, only access token 
-// false -> both will be set
 func SetToken(userId string, token *model.Token, redis *redis.Client, f bool) error {
 	accessExpire := time.Unix(token.AccessExpire, 0)
 	refreshExpire := time.Unix(token.RefreshExpire, 0)
