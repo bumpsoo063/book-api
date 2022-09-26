@@ -12,8 +12,8 @@ func GetBooks(c *gin.Context) {
 	db := database.GetPq()
 	rows, err := db.Query(`SELECT id, title FROM book`)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"book": "no books in table " + err.Error(),
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "error while querying" + err.Error(),
 		})
 	}
 	defer rows.Close()

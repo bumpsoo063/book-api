@@ -12,16 +12,18 @@ import (
 )
 
 func SignUp(c *gin.Context) {
-	var admin model.Admin
+	admin := model.Admin{}
 	if err := c.ShouldBindJSON(&admin); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 	if len(admin.Username) > 20 || len(admin.Username) < 5 || len(admin.Password) > 20 || len(admin.Password) < 5 {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"bad input": "username or password is invalid",
 		})
+		return
 	}
 	db := database.GetPq()
 	sql := db.QueryRow("SELECT uuid FROM admin WHERE username=$1", admin.Username)
@@ -30,6 +32,7 @@ func SignUp(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"bad input": "username exists",
 		})
+		return
 	}
 	admin.Password = password.HashPassword(admin.Password)
 	var err error
@@ -38,12 +41,14 @@ func SignUp(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 	admin.Id = id.String()
 	if _, err := db.Exec(`INSERT INTO admin VALUES ($1, $2, $3)`, admin.Id, admin.Username, admin.Password); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"sign-up": "success",
