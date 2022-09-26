@@ -24,8 +24,8 @@ func Generate(user uuid.UUID) (model.Token, error) {
 	token.AccessExpire = time.Now().Add(time.Minute * time.Duration(minutes)).Unix()
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
-	claims["access_uuid"] = token.AccessUuid
-	claims["user_id"] = user
+	claims["access_uuid"] = token.AccessUuid.String()
+	claims["user_id"] = user.String()
 	claims["exp"] = token.AccessExpire
 	token.AccessToken, err = jwt.NewWithClaims(jwt.SigningMethodHS512, claims).SignedString([]byte(secret))
 	if err != nil {

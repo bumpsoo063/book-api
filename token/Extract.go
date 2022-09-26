@@ -25,6 +25,7 @@ func ExtractAccess(auth string) (string, error) {
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		access := claims["access_uuid"].(string)
+		fmt.Println(access)
 		return access, nil
 	}
 	return "", fmt.Errorf("token is not valid")
