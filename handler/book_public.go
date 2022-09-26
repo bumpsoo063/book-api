@@ -10,14 +10,14 @@ import (
 
 func GetBooks(c *gin.Context) {
 	db := database.GetPq()
-	rows, err := db.Query("SELECT id, title FROM book")
+	rows, err := db.Query(`SELECT id, title FROM book`)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"book": "no books in table " + err.Error(),
 		})
 	}
 	defer rows.Close()
-	var ret map[string]string
+	ret := map[string]string{}
 	for rows.Next() {
 		var i, t string
 		err := rows.Scan(&i, &t)
@@ -38,15 +38,11 @@ func GetBook(c *gin.Context) {
 	db := database.GetPq()
 	var book model.Book
 	if err := c.ShouldBindUri(&book); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "id must be passed",
-		})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "id must be passed"})
 	}
-	row := db.QueryRow("SELECT * FROM book where id=$1", book.Id)
+	row := db.QueryRow(`SELECT * FROM book where id = '$1'`, book.Id)
 	if err := row.Scan(&book.Id, &book.CreatedAt, &book.UpdatedAt, &book.Title, &book.Author); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"book": "no book is selected",
-		})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"book": "no book is selected"})
 	}
 	ret := "v1/book/" + book.Id
 	c.JSON(http.StatusOK, gin.H{

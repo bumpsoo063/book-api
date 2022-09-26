@@ -8,7 +8,7 @@ import (
 func PublicRoutes(a *gin.Engine) {
 	router := a.Group("/v1")
 	router.GET("/book", handler.GetBooks)
-	router.GET("/book/:uuid", handler.GetBook)
+	router.GET("/book/:id", handler.GetBook)
 	router.POST("/auth/sign-up", handler.SignUp)
 	router.POST("/auth/sign-in", handler.SignIn)
 }
