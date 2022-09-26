@@ -18,7 +18,7 @@ func SignOut(c *gin.Context) {
 		})
 	}
 	rdb := database.GetRedis()
-	res, err := rdb.Del(context.Background(), uuid.String()).Result()
+	res, err := rdb.Del(context.Background(), uuid).Result()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"sign-out": "unauthroized",
