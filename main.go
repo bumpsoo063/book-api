@@ -6,11 +6,16 @@ import (
 	"git.bumpsoo.dev/bumpsoo/book-api/database"
 	"git.bumpsoo.dev/bumpsoo/book-api/route"
 
-	// "git.bumpsoo.dev/bumpsoo/book-api/model"
+	_ "git.bumpsoo.dev/bumpsoo/book-api/docs"
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 )
 
+// @title book-api
+// @version         1.0
+// @description     book API in Go
+// @host      localhost:80
+// @BasePath  /v1
 func main() {
 	if err := database.ConnectPq(); err != nil {
 		log.Fatal("Can not connect to database " + err.Error())

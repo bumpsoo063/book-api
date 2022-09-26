@@ -8,6 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      get books by map{"title": "get link"}
+// @Description  all books with link to get details
+// @Tags         books
+// @Produce      json
+// @Success      200  {object} string: string
+// @Router       /book [get]
 func GetBooks(c *gin.Context) {
 	db := database.GetPq()
 	rows, err := db.Query(`SELECT id, title FROM book`)

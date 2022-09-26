@@ -1,0 +1,22 @@
+basePath: /v1
+host: localhost:80
+info:
+  contact: {}
+  description: book API in Go
+  title: book-api
+  version: "1.0"
+paths:
+  /book:
+    get:
+      description: all books with link to get details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 'get books by map{"title": "get link"}'
+      tags:
+      - books
+swagger: "2.0"
