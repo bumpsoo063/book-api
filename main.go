@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+
+	"git.bumpsoo.dev/bumpsoo/book-api/database"
 	"git.bumpsoo.dev/bumpsoo/book-api/route"
 
 	// "git.bumpsoo.dev/bumpsoo/book-api/model"
@@ -9,18 +12,10 @@ import (
 )
 
 func main() {
-	// db, err := database.Connect()
-	// if err != nil {
-	// 	println("error")
-	// 	log.Panic(err)
-	// } else {
-	// 	row := db.QueryRow("SELECT * FROM book")
-	// 	var str string
-	// 	if err := row.Scan(&str); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	println(str)
-	// }
+	if err := database.ConnectPq(); err != nil {
+		log.Fatal("Can not connect to database " + err.Error())
+	}
+	database.ConnectRedis()
 	app := gin.Default()
 	route.PublicRoutes(app)
 	app.Run(":3000")

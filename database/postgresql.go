@@ -9,17 +9,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var PQ *sql.DB = nil
+var pq *sql.DB
 
-func ConnectPq() (*sql.DB, error) {
-	if PQ == nil {
-		port, err := strconv.Atoi(os.Getenv("DB_PORT"))
-		if err != nil {
-			return nil, err
-		}
-		connStr := fmt.Sprintf("host=%s dbname=%s user=%s port=%d password=%s", os.Getenv("DB_HOST"), os.Getenv("DB_NAME"), os.Getenv("DB_USER"), port, os.Getenv("DB_PASSWORD"))
-		PQ, err = sql.Open("postgres", connStr)
-		defer PQ.Close()
+func ConnectPq() error {
+	port, err := strconv.Atoi(os.Getenv("DB_PORT"))
+	if err != nil {
+		return err
 	}
-	return PQ, nil
+	connStr := fmt.Sprintf("host=%s dbname=%s user=%s port=%d password=%s", os.Getenv("DB_HOST"), os.Getenv("DB_NAME"), os.Getenv("DB_USER"), port, os.Getenv("DB_PASSWORD"))
+	pq, err = sql.Open("postgres", connStr)
+	defer pq.Close()
+	return nil
+}
+
+func GetPq() *sql.DB {
+	return pq
 }

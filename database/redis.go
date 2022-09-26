@@ -10,16 +10,17 @@ import (
 	"github.com/google/uuid"
 )
 
-var Redis *redis.Client
+var rdb *redis.Client
 
-func ConnectRedis() *redis.Client {
-	if Redis == nil {
-		rdb := redis.NewClient(&redis.Options{
-			Addr: os.Getenv("REDIS_ADDR"),
-		})
-		defer rdb.Close()
-	}
-	return Redis
+func ConnectRedis() {
+	rdb = redis.NewClient(&redis.Options{
+		Addr: os.Getenv("REDIS_ADDR"),
+	})
+	defer rdb.Close()
+}
+
+func GetRedis() *redis.Client {
+	return rdb
 }
 
 func SetToken(user uuid.UUID, token *model.Token, redis *redis.Client) error {

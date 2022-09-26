@@ -23,12 +23,7 @@ func SignUp(c *gin.Context) {
 			"bad input": "username or password is invalid",
 		})
 	}
-	db, err := database.ConnectPq()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "can not connect to database. " + err.Error(),
-		})
-	}
+	db := database.GetPq()
 	sql := db.QueryRow("SELECT uuid FROM admin WHERE username=$1", admin.Username)
 	var row string
 	if err := sql.Scan(&row); err == nil {
@@ -37,6 +32,7 @@ func SignUp(c *gin.Context) {
 		})
 	}
 	admin.Password = password.HashPassword(admin.Password)
+	var err error
 	admin.Id, err = uuid.NewUUID()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -55,7 +51,7 @@ func SignUp(c *gin.Context) {
 			"username": admin.Username,
 		},
 		"links": map[string]string{
-			"GET books":    "/v1/book",
+			"GET books": "/v1/book",
 		},
 	})
 }
@@ -72,12 +68,7 @@ func SignIn(c *gin.Context) {
 			"bad input": "username or password is invalid",
 		})
 	}
-	db, err := database.ConnectPq()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "can not connect to database. " + err.Error(),
-		})
-	}
+	db := database.GetPq()
 	row := db.QueryRow(`SELECT * FROM admin WHERE username=$1`, admin.Username)
 	var dbAdmin model.Admin
 	if err := row.Scan(&dbAdmin.Id, &dbAdmin.Username, &dbAdmin.Password); err != nil {
@@ -96,7 +87,7 @@ func SignIn(c *gin.Context) {
 			"error": "failed to generate token " + err.Error(),
 		})
 	}
-	rdb := database.ConnectRedis()
+	rdb := database.GetRedis()
 	if err := database.SetToken(dbAdmin.Id, &token, rdb); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to set token " + err.Error(),
@@ -111,7 +102,7 @@ func SignIn(c *gin.Context) {
 			"username": dbAdmin.Username,
 		},
 		"links": map[string]string{
-			"GET books":     "/v1/book",
+			"GET books": "/v1/book",
 		},
 	})
 }
