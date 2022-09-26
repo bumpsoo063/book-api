@@ -10,6 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// if f == true, only access token
+// false -> both will be generdated
 func Generate(userId string, f bool) (model.Token, error) {
 	var token model.Token
 	secret := os.Getenv("JWT_SECRET")
