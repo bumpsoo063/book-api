@@ -36,23 +36,22 @@ func GetBooks(c *gin.Context) {
 
 func GetBook(c *gin.Context) {
 	db := database.GetPq()
-	var id string
-	if err := c.ShouldBindUri(&id); err != nil {
+	var book model.Book
+	if err := c.ShouldBindUri(&book); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": "id must be passed",
 		})
 	}
-	var book model.Book
-	row := db.QueryRow("SELECT * FROM book where id=$1", id)
+	row := db.QueryRow("SELECT * FROM book where id=$1", book.Id)
 	if err := row.Scan(&book.Id, &book.CreatedAt, &book.UpdatedAt, &book.Title, &book.Author); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"book": "no book is selected",
 		})
 	}
-	ret := "v1/book/" + id
+	ret := "v1/book/" + book.Id
 	c.JSON(http.StatusOK, gin.H{
 		"book": map[string]any{
-			"id":         id,
+			"id":         book.Id,
 			"created_at": book.CreatedAt,
 			"updated_at": book.UpdatedAt,
 			"title":      book.Title,
