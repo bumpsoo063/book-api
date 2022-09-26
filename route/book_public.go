@@ -9,7 +9,7 @@ import (
 )
 
 func GetBooks(c *gin.Context) {
-	db, err := database.Connect()
+	db, err := database.ConnectPq()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -18,14 +18,12 @@ func GetBooks(c *gin.Context) {
 	if err := row.Scan(&tmp); err != nil {
 		log.Fatal(err)
 	}
-	c.JSON(http.StatusOK, gin.H{
-
-	})
+	c.JSON(http.StatusOK, gin.H{})
 	db.Close()
 }
 
 func GetBook(c *gin.Context) {
-	db, err := database.Connect()
+	db, err := database.ConnectPq()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,10 +32,10 @@ func GetBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "id must be passed",
 		})
-		return 
+		return
 	}
 	row := db.QueryRow("SELECT * FROM book where id=$1", id)
-	var tmp string;
+	var tmp string
 	if err := row.Scan(&tmp); err != nil {
 		log.Fatal(err)
 	}
