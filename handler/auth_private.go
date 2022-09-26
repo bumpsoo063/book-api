@@ -11,15 +11,7 @@ import (
 )
 
 func SignOut(c *gin.Context) {
-	tok, err := token.Parse(c.Request.Header.Get("authorization"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"sign-out": "unauthroized",
-		})
-	}
-	fmt.Println(tok)
-	uuid, err := token.ExtractAccess(tok)
-	fmt.Println(uuid)
+	uuid, err := token.ExtractAccess(c.Request.Header.Get("authorization"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"sign-out": "unauthroized",
