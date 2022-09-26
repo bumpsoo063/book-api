@@ -1,0 +1,31 @@
+version: 3.8
+
+services:
+  api:
+    build: .
+    ports:
+      - "80:3000"
+    networks:
+      - api
+    depend_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=book
+      - POSTGRES_USER=book
+      - POSTGRES_PASSWORD=bookpassword
+    networks:
+      - api
+  
+  redis:
+    image: redis:7-alpine
+    networks:
+      - api
+
+
+networks:
+  api:
+    driver: bridge
