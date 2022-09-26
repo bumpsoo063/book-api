@@ -82,7 +82,7 @@ func SignIn(c *gin.Context) {
 			"bad input": "password does not match",
 		})
 	}
-	token, err := token.Generate(dbAdmin.Id)
+	token, err := token.Generate(dbAdmin.Id, false)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to generate token " + err.Error(),
