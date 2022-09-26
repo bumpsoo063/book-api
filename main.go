@@ -20,5 +20,6 @@ func main() {
 	defer database.GetRedis().Close()
 	app := gin.Default()
 	route.PublicRoutes(app)
+	route.PrivateRoutes(app)
 	app.Run(":3000")
 }
