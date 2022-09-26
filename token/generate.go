@@ -12,7 +12,7 @@ import (
 
 func Generate(userId string) (model.Token, error) {
 	var token model.Token
-	secret := os.Getenv("JWT_SECRET_KEY")
+	secret := os.Getenv("JWT_SECRET")
 	minutes, err := strconv.Atoi(os.Getenv("JWT_SECRET_EXPIRE_MINUTES"))
 	if err != nil {
 		minutes = 10

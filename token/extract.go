@@ -15,20 +15,16 @@ func ExtractAccess(auth string) (string, error) {
 		tokenString = temp[1]
 	}
 	secret := os.Getenv("JWT_SECRET")
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(secret), nil
 	})
-	if err != nil {
-		fmt.Println(err.Error())
-		return "", err
-	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		access := claims["access_uuid"].(string)
-		fmt.Println(access)
 		return access, nil
+	} else {
+		return "", fmt.Errorf("token is not valid")
 	}
-	return "", fmt.Errorf("token is not valid")
 }
