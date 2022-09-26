@@ -10,7 +10,7 @@ import (
 
 func GetBooks(c *gin.Context) {
 	db := database.GetPq()
-	rows, err := db.Query("SELECT id, title FROM books")
+	rows, err := db.Query("SELECT id, title FROM book")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"book": "no books in table " + err.Error(),
@@ -36,8 +36,8 @@ func GetBooks(c *gin.Context) {
 
 func GetBook(c *gin.Context) {
 	db := database.GetPq()
-	id, f := c.GetQuery("id")
-	if f == false {
+	var id string
+	if err := c.ShouldBindUri(&id); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": "id must be passed",
 		})

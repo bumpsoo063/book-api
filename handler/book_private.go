@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -33,14 +32,13 @@ func PostBook(c *gin.Context) {
 	}
 	book.Id = id.String()
 	db := database.GetPq()
-	res, err := db.Exec(`INSERT INTO book VALUES ($1, $2, $3, $4, $5)`, book.Id, book.CreatedAt, book.UpdatedAt, book.Title, book.Author)
+	_, err = db.Exec(`INSERT INTO book VALUES ($1, $2, $3, $4, $5)`, book.Id, book.CreatedAt, book.UpdatedAt, book.Title, book.Author)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"post book": "failed to create column " + err.Error(),
 		})
 	}
-	fmt.Println(res)
-	ret := "v1/book/" + book.Id
+	ret := "/v1/book/" + book.Id
 	c.JSON(http.StatusOK, gin.H{
 		"post book": map[string]any{
 			"id":         book.Id,
