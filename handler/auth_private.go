@@ -60,13 +60,14 @@ func Refresh(c *gin.Context) {
 			"refresh": "failed to generate token " + err.Error(),
 		})
 	}
-	if err := database.SetToken(userId, &tk, rdb); err != nil {
+	if err := database.SetToken(userId, &tk, rdb, true); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to set token " + err.Error(),
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"refresh": "success",
+		"refresh":      "success",
+		"access_token": tk.AccessToken,
 		"links": map[string]string{
 			"GET books": "/v1/book",
 		},

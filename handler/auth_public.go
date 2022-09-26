@@ -89,7 +89,7 @@ func SignIn(c *gin.Context) {
 		})
 	}
 	rdb := database.GetRedis()
-	if err := database.SetToken(dbAdmin.Id, &token, rdb); err != nil {
+	if err := database.SetToken(dbAdmin.Id, &token, rdb, false); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to set token " + err.Error(),
 		})
