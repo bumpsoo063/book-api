@@ -27,7 +27,7 @@ func Generate(user uuid.UUID) (model.Token, error) {
 	claims["access_uuid"] = token.AccessUuid.String()
 	claims["user_id"] = user.String()
 	claims["exp"] = token.AccessExpire
-	token.AccessToken, err = jwt.NewWithClaims(jwt.SigningMethodHS512, claims).SignedString([]byte(secret))
+	token.AccessToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(secret))
 	if err != nil {
 		return token, err
 	}
@@ -46,7 +46,7 @@ func Generate(user uuid.UUID) (model.Token, error) {
 	claims["refresh_uuid"] = token.RefreshUuid
 	claims["user_id"] = user
 	claims["exp"] = token.RefreshExpire
-	token.RefreshToken, err = jwt.NewWithClaims(jwt.SigningMethodHS512, claims).SignedString([]byte(rsecret))
+	token.RefreshToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(rsecret))
 
 	return token, nil
 }

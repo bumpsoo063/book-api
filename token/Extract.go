@@ -21,6 +21,7 @@ func ExtractAccess(auth string) (string, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
+		fmt.Println(err.Error())
 		return "", err
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
