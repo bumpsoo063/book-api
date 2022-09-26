@@ -8,9 +8,9 @@ import (
 
 func PrivateRoutes(a *gin.Engine) {
 	router := a.Group("/v1")
-	router.POST("/book", handler.PostBook).Use(middleware.Token)
-	router.PATCH("/book/:id", handler.PatchBook).Use(middleware.Token)
-	router.DELETE("/book/:id", handler.DeleteBook).Use(middleware.Token)
+	router.POST("/book", middleware.Token, handler.PostBook)
+	router.PATCH("/book/:id", middleware.Token, handler.PatchBook)
+	router.DELETE("/book/:id", middleware.Token, handler.DeleteBook)
 
 	router.DELETE("/auth/sign-out", handler.SignOut)
 	router.POST("/auth/refresh", handler.Refresh)
