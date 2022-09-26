@@ -40,7 +40,7 @@ func GetBook(c *gin.Context) {
 	if err := c.ShouldBindUri(&book); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "id must be passed"})
 	}
-	row := db.QueryRow(`SELECT * FROM book where id = '$1'`, book.Id)
+	row := db.QueryRow(`SELECT * FROM book WHERE id = $1`, book.Id)
 	if err := row.Scan(&book.Id, &book.CreatedAt, &book.UpdatedAt, &book.Title, &book.Author); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"book": "no book is selected"})
 	}

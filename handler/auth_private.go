@@ -29,7 +29,7 @@ func SignOut(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"sign-out": "success",
 		"links": map[string]string{
-			"GET books": "/v1/book",
+			"GET": "/v1/book",
 		},
 	})
 }
@@ -69,7 +69,7 @@ func Refresh(c *gin.Context) {
 		"refresh":      "success",
 		"access_token": tk.AccessToken,
 		"links": map[string]string{
-			"GET books": "/v1/book",
+			"GET": "/v1/book",
 		},
 	})
 }
