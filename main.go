@@ -16,6 +16,8 @@ func main() {
 		log.Fatal("Can not connect to database " + err.Error())
 	}
 	database.ConnectRedis()
+	defer database.GetPq().Close()
+	defer database.GetRedis().Close()
 	app := gin.Default()
 	route.PublicRoutes(app)
 	app.Run(":3000")

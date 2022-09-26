@@ -5,10 +5,10 @@ import (
 )
 
 type Token struct {
-	AccessToken string
-	RefreshToken string
-	AccessUuid uuid.UUID
-	RefreshUuid uuid.UUID
-	AccessExpire int64
+	AccessToken   string
+	RefreshToken  string `json:"refresh_token"`
+	AccessUuid    uuid.UUID
+	RefreshUuid   uuid.UUID
+	AccessExpire  int64
 	RefreshExpire int64
 }

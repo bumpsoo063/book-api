@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateToken(user uuid.UUID) (model.Token, error) {
+func Generate(user uuid.UUID) (model.Token, error) {
 	var token model.Token
 	secret := os.Getenv("JWT_SECRET_KEY")
 	minutes, err := strconv.Atoi(os.Getenv("JWT_SECRET_EXPIRE_MINUTES"))
@@ -47,6 +47,6 @@ func GenerateToken(user uuid.UUID) (model.Token, error) {
 	claims["user_id"] = user
 	claims["exp"] = token.RefreshExpire
 	token.RefreshToken, err = jwt.NewWithClaims(jwt.SigningMethodHS512, claims).SignedString([]byte(rsecret))
-	
+
 	return token, nil
 }

@@ -1,4 +1,4 @@
-package route
+package handler
 
 import (
 	"net/http"
@@ -81,7 +81,7 @@ func SignIn(c *gin.Context) {
 			"bad input": "password does not match",
 		})
 	}
-	token, err := token.GenerateToken(dbAdmin.Id)
+	token, err := token.Generate(dbAdmin.Id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to generate token " + err.Error(),

@@ -16,7 +16,6 @@ func ConnectRedis() {
 	rdb = redis.NewClient(&redis.Options{
 		Addr: os.Getenv("REDIS_ADDR"),
 	})
-	defer rdb.Close()
 }
 
 func GetRedis() *redis.Client {

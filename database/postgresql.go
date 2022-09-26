@@ -18,7 +18,6 @@ func ConnectPq() error {
 	}
 	connStr := fmt.Sprintf("host=%s dbname=%s user=%s port=%d password=%s", os.Getenv("DB_HOST"), os.Getenv("DB_NAME"), os.Getenv("DB_USER"), port, os.Getenv("DB_PASSWORD"))
 	pq, err = sql.Open("postgres", connStr)
-	defer pq.Close()
 	return nil
 }
 
