@@ -8,7 +8,7 @@ RUN go mod tidy
 
 RUN go build -o book-api .
 
-FROM scratch
+FROM alpine
 
 COPY --from=builder /build/book-api /
 
